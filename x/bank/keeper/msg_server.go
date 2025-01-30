@@ -42,7 +42,14 @@ func (k msgServer) Send(goCtx context.Context, msg *types.MsgSend) (*types.MsgSe
 			return nil, sdkerrors.ErrInvalidAddress.Wrapf("invalid to address: %s", err)
 		}
 	} else {
-		return nil, sdkerrors.ErrInvalidRequest.Wrapf("invalid keeper type: %T", k.Keeper)
+		from, err = sdk.AccAddressFromBech32(msg.FromAddress)
+		if err != nil {
+			return nil, sdkerrors.ErrInvalidAddress.Wrapf("invalid from address: %s", err)
+		}
+		to, err = sdk.AccAddressFromBech32(msg.ToAddress)
+		if err != nil {
+			return nil, sdkerrors.ErrInvalidAddress.Wrapf("invalid to address: %s", err)
+		}
 	}
 
 	if !msg.Amount.IsValid() {
